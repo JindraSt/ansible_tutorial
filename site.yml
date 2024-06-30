@@ -1,0 +1,48 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+  tasks:
+    - name: Update repository
+      tags: always
+      apt:
+        upgrade: dist
+        update_cache: yes
+
+- hosts: docker
+  become: true
+  tasks:
+    - name: Install package - Tmux
+      tags: docker
+      apt:
+        name:
+          - tmux
+        state: latest
+
+- hosts: dohled
+  become: true
+  tasks:
+    - name: Install another package - Tmux
+      tags: dohled
+      apt:
+        name: tmux
+        state: latest
+
+- hosts: all
+  become: true
+  tasks:
+    - name: Copy pokus.txt into home directory
+      tags: pokus
+      copy:
+        src: pokusy/
+        dest: /home/henry/pokusy
+        owner: henry
+        group: henry
+
+    - name: Update line in pokus.txt 
+      tags: pokus_update
+      lineinfile:
+        path: /home/henry/pokusy/pokus2.txt
+        regexp: '^Uprava1'
+        line: Uprava pomoci tasku
